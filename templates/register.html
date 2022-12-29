@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Cadastro</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/register.css')}}">
+</head>
+<body>
+    <h1>Página de Registro</h1>
+    <form action="/Register" method="POST">
+        <input type="text" name="nome" placeholder="Nome" required>
+        <input type="text" name="telefone" placeholder="Número do Celular" required>
+        <input type="email" name="email" id="email" placeholder="Email" required class="large">
+        <input type="password" name="password" placeholder="Senha" required>
+        <input type="password" name="conf_password" placeholder="Confirmar Senha" required>
+        <div class="btn_sub">
+            <input type="submit" value="Cadastrar">
+        </div>
+    </form>
+    <a href="/">Acessar minha conta</a>
+</body>
+</html>
