@@ -1,13 +1,13 @@
 import smtplib
 from email.message import EmailMessage
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect
 import os 
 from dotenv import load_dotenv
 import mysql.connector
 from random import randint
 from twilio.rest import Client
 
-
+from banco import Banco
 load_dotenv()
 
 #variaveis de email
@@ -33,7 +33,7 @@ mydb = mysql.connector.connect(
 
 
 client = Client(ac_sid, au_token)
-
+banco = Banco(mydb)
 
 app = Flask(__name__)
 
@@ -44,10 +44,8 @@ def index():
         email = request.form['email']
         senha = request.form['password']
 
-        mycursor = mydb.cursor()
-        sql_query = f"SELECT email, senha FROM tb_contas WHERE email = '{email}' AND senha = '{senha}';"
-        mycursor.execute(sql_query)
-        myresult = mycursor.fetchall()
+        myresult = banco.select(email, senha)
+
         if len(myresult) == 0:
             return redirect('/Register')
         else:
@@ -62,21 +60,19 @@ def index():
                 from_ = phone_num,
                 to = myresult[0][0]
             )
-            '''
+            
+            emailMSG = EmailMessage()
+            emailMSG['Subject'] = 'Código de Verificação'
+            emailMSG['From'] = mail_adrress
+            emailMSG['To'] = email
+            emailMSG.set_content(f'Seu código de verificação é: {rnd}')
 
-                BO NA VERIFICAÇÃO DE CONTA, NÃO SEI PQ
-
-                emailMSG = EmailMessage()
-                emailMSG['Subject'] = 'Código de Verificação'
-                emailMSG['From'] = mail_adrress
-                emailMSG['To'] = email
-                emailMSG.set_content(f'Seu código de verificação é: {rnd}')
-
-                #Enviar o email
-                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                    smtp.login(mail_adrress, mail_password)
-                    smtp.send_message(emailMSG)
-            '''
+            #Enviar o email
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                smtp.login(mail_adrress, mail_password)
+                smtp.send_message(emailMSG)
+                
+            
             
 
             return redirect('/Logged')
